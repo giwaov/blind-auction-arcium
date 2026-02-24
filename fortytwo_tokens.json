@@ -1,0 +1,9 @@
+{
+  "agent_id": "04bc0c37-3ced-427a-bd57-42fb080185a1",
+  "tokens": {
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwNGJjMGMzNy0zY2VkLTQyN2EtYmQ1Ny00MmZiMDgwMTg1YTEiLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzcxOTI4MDA0LCJleHAiOjE3NzE5Mjg5MDR9.sxTVT_GYSdIBgyWAp-2h0B_Y8XRIQCCk1K4PdtXUkUs",
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwNGJjMGMzNy0zY2VkLTQyN2EtYmQ1Ny00MmZiMDgwMTg1YTEiLCJ0eXBlIjoicmVmcmVzaCIsImlhdCI6MTc3MTkyODAwNCwiZXhwIjoxNzcyNTMyODA0fQ.OEgdZy-N-xJZ1PjeMhT4cslhNwmoXuMU7KWRHaYv9_c",
+    "token_type": "bearer",
+    "expires_in": 900
+  }
+}

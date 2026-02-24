@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[824],{1824:(e,s,c)=>{e.exports=c.p+"static/media/miden_client_web.1c58f26d.wasm"}}]);

@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "functions": {
+    "/api/audit": {
+      "maxDuration": 45
+    },
+    "/api/chat": {
+      "maxDuration": 60
+    },
+    "/api/predictions": {
+      "maxDuration": 30
+    }
+  }
+}

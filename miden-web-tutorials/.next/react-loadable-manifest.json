@@ -1,0 +1,60 @@
+{
+  "lib\\1_createWalletAndFaucet.ts -> @demox-labs/miden-sdk": {
+    "id": 6400,
+    "files": [
+      "static/chunks/fc1f1c17.2a792d9c488dbd5e.js",
+      "static/chunks/223.6ef5b9726b1f3540.js"
+    ]
+  },
+  "lib\\2_mintConsumeTransfer.ts -> @demox-labs/miden-sdk": {
+    "id": 6400,
+    "files": [
+      "static/chunks/fc1f1c17.2a792d9c488dbd5e.js",
+      "static/chunks/223.6ef5b9726b1f3540.js"
+    ]
+  },
+  "lib\\3_incrementCounterContract.ts -> @demox-labs/miden-sdk": {
+    "id": 6400,
+    "files": [
+      "static/chunks/fc1f1c17.2a792d9c488dbd5e.js",
+      "static/chunks/223.6ef5b9726b1f3540.js"
+    ]
+  },
+  "lib\\4_unauthenticatedNoteTransfer.ts -> @demox-labs/miden-sdk": {
+    "id": 6400,
+    "files": [
+      "static/chunks/fc1f1c17.2a792d9c488dbd5e.js",
+      "static/chunks/223.6ef5b9726b1f3540.js"
+    ]
+  },
+  "lib\\5_foreignProcedureInvocation.ts -> @demox-labs/miden-sdk": {
+    "id": 6400,
+    "files": [
+      "static/chunks/fc1f1c17.2a792d9c488dbd5e.js",
+      "static/chunks/223.6ef5b9726b1f3540.js"
+    ]
+  },
+  "node_modules\\@demox-labs\\miden-sdk\\dist\\wasm.js -> ./Cargo-acbd8ac5.js": {
+    "id": 7874,
+    "files": []
+  },
+  "node_modules\\@demox-labs\\miden-sdk\\dist\\workers\\web-client-methods-worker.js -> ./Cargo-acbd8ac5-acbd8ac5.js": {
+    "id": 3132,
+    "files": [
+      "static/chunks/c525ee8b.7b1e135cdb0c8a36.js",
+      "static/chunks/824.49be763149c17a39.js"
+    ]
+  },
+  "node_modules\\next\\dist\\client\\index.js -> ../pages/_app": {
+    "id": 1966,
+    "files": [
+      "static/chunks/966.1775eb621d8d3e09.js"
+    ]
+  },
+  "node_modules\\next\\dist\\client\\index.js -> ../pages/_error": {
+    "id": 3899,
+    "files": [
+      "static/chunks/899.1813981119fa1f8a.js"
+    ]
+  }
+}
