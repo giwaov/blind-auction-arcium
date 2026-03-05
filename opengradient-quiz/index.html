@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenGradient Knowledge Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --success: #22c55e;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --bg: #0f0f23;
+            --bg-card: #1a1a2e;
+            --bg-hover: #252542;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            transition: transform 0.2s;
+        }
+
+        /* Start Screen */
+        .start-screen {
+            text-align: center;
+        }
+
+        .start-screen h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .feature {
+            background: var(--bg-hover);
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .feature-icon {
+            font-size: 1.5rem;
+        }
+
+        .feature-text {
+            font-size: 0.95rem;
+        }
+
+        .btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-hover);
+            border: 1px solid var(--border);
+        }
+
+        /* Quiz Screen */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .progress-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .question-counter {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+
+        .timer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--warning);
+        }
+
+        .score-display {
+            background: var(--bg-hover);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-hover);
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .question-card {
+            margin-bottom: 25px;
+        }
+
+        .question-category {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            font-weight: 600;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            background: var(--bg-hover);
+            border: 2px solid var(--border);
+            padding: 18px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .option:hover:not(.disabled) {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .option.selected {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.15);
+        }
+
+        .option.correct {
+            border-color: var(--success);
+            background: rgba(34, 197, 94, 0.15);
+        }
+
+        .option.incorrect {
+            border-color: var(--error);
+            background: rgba(239, 68, 68, 0.15);
+        }
+
+        .option.disabled {
+            cursor: default;
+        }
+
+        .option-letter {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .option.correct .option-letter {
+            background: var(--success);
+            color: white;
+        }
+
+        .option.incorrect .option-letter {
+            background: var(--error);
+            color: white;
+        }
+
+        .explanation {
+            background: var(--bg-hover);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: 0 12px 12px 0;
+            margin-top: 20px;
+        }
+
+        .explanation h4 {
+            color: var(--primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quiz-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 25px;
+        }
+
+        /* Results Screen */
+        .results-screen {
+            text-align: center;
+        }
+
+        .results-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+
+        .results-screen h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .final-score {
+            font-size: 4rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: var(--bg-hover);
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .rank-badge {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 20px 0;
+        }
+
+        .rank-master {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #1a1a2e;
+        }
+
+        .rank-expert {
+            background: linear-gradient(135deg, #a855f7, #8b5cf6);
+            color: white;
+        }
+
+        .rank-intermediate {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+
+        .rank-beginner {
+            background: linear-gradient(135deg, #64748b, #475569);
+            color: white;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        /* Leaderboard */
+        .leaderboard {
+            margin-top: 30px;
+        }
+
+        .leaderboard h3 {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .leaderboard-list {
+            background: var(--bg-hover);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .leaderboard-item:last-child {
+            border-bottom: none;
+        }
+
+        .leaderboard-rank {
+            width: 30px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .leaderboard-name {
+            flex: 1;
+        }
+
+        .leaderboard-score {
+            font-weight: 600;
+        }
+
+        /* Share */
+        .share-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border);
+        }
+
+        .share-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .share-btn {
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s;
+        }
+
+        .share-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .share-twitter {
+            background: #1da1f2;
+            color: white;
+        }
+
+        .share-copy {
+            background: var(--bg-hover);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .pulse {
+            animation: pulse 0.5s ease;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .question-text {
+                font-size: 1.2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quiz-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">🧠</div>
+            <h1>OpenGradient Quiz</h1>
+            <p>Test your knowledge of decentralized AI infrastructure</p>
+        </header>
+
+        <!-- Start Screen -->
+        <div id="start-screen" class="card start-screen fade-in">
+            <h2>Ready to prove your OpenGradient expertise?</h2>
+            
+            <div class="features">
+                <div class="feature">
+                    <span class="feature-icon">📚</span>
+                    <span class="feature-text">15 questions about OpenGradient</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">⏱️</span>
+                    <span class="feature-text">30 seconds per question</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">🏆</span>
+                    <span class="feature-text">Earn your rank badge</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">📊</span>
+                    <span class="feature-text">Track your progress</span>
+                </div>
+            </div>
+
+            <button class="btn" onclick="startQuiz()">Start Quiz 🚀</button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="card hidden">
+            <div class="quiz-header">
+                <div class="progress-info">
+                    <span class="question-counter">Question <span id="current-q">1</span>/<span id="total-q">15</span></span>
+                    <div class="timer">
+                        <span>⏱️</span>
+                        <span id="timer">30</span>s
+                    </div>
+                </div>
+                <div class="score-display">Score: <span id="current-score">0</span></div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+
+            <div class="question-card">
+                <span class="question-category" id="question-category">Category</span>
+                <h3 class="question-text" id="question-text">Question goes here?</h3>
+                
+                <div class="options" id="options">
+                    <!-- Options will be inserted here -->
+                </div>
+
+                <div class="explanation hidden" id="explanation">
+                    <h4>💡 Explanation</h4>
+                    <p id="explanation-text"></p>
+                </div>
+            </div>
+
+            <div class="quiz-actions">
+                <button class="btn hidden" id="next-btn" onclick="nextQuestion()">Next Question →</button>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="card results-screen hidden">
+            <div class="results-icon" id="results-icon">🏆</div>
+            <h2 id="results-title">Quiz Complete!</h2>
+            <div class="final-score"><span id="final-score">0</span>%</div>
+            <div id="rank-badge" class="rank-badge">OpenGradient Master</div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="correct-count">0</div>
+                    <div class="stat-label">Correct</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="incorrect-count">0</div>
+                    <div class="stat-label">Incorrect</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="time-taken">0s</div>
+                    <div class="stat-label">Time Taken</div>
+                </div>
+            </div>
+
+            <div class="leaderboard">
+                <h3>🏅 Local Leaderboard</h3>
+                <div class="leaderboard-list" id="leaderboard">
+                    <!-- Leaderboard items will be inserted here -->
+                </div>
+            </div>
+
+            <div class="share-section">
+                <p>Share your result!</p>
+                <div class="share-buttons">
+                    <button class="share-btn share-twitter" onclick="shareTwitter()">
+                        🐦 Tweet Score
+                    </button>
+                    <button class="share-btn share-copy" onclick="copyResult()">
+                        📋 Copy Result
+                    </button>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn" onclick="restartQuiz()">Play Again 🔄</button>
+                <button class="btn btn-secondary" onclick="showAnswers()">Review Answers 📝</button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Built with ❤️ for the <a href="https://opengradient.ai" target="_blank">OpenGradient</a> community</p>
+            <p style="margin-top: 10px;">Learn more at <a href="https://docs.opengradient.ai" target="_blank">docs.opengradient.ai</a></p>
+        </footer>
+    </div>
+
+    <script>
+        // Question Bank
+        const questions = [
+            {
+                category: "Basics",
+                question: "What is OpenGradient?",
+                options: [
+                    "A centralized cloud computing platform",
+                    "A decentralized AI infrastructure platform",
+                    "A cryptocurrency exchange",
+                    "A social media network"
+                ],
+                correct: 1,
+                explanation: "OpenGradient is a decentralized AI infrastructure platform that enables verifiable AI inference on the blockchain."
+            },
+            {
+                category: "Architecture",
+                question: "What does TEE stand for in OpenGradient's context?",
+                options: [
+                    "Total Encrypted Environment",
+                    "Trusted Execution Environment",
+                    "Token Exchange Engine",
+                    "Transparent Evaluation Engine"
+                ],
+                correct: 1,
+                explanation: "TEE (Trusted Execution Environment) is a secure hardware enclave that runs LLMs and AI models privately while ensuring verifiable computation."
+            },
+            {
+                category: "Model Hub",
+                question: "What format does OpenGradient Hub primarily use for AI models?",
+                options: [
+                    "PyTorch (.pt)",
+                    "TensorFlow (.h5)",
+                    "ONNX (.onnx)",
+                    "Pickle (.pkl)"
+                ],
+                correct: 2,
+                explanation: "OpenGradient Hub uses ONNX (Open Neural Network Exchange) format, which is a universal model format that works across different frameworks."
+            },
+            {
+                category: "Tokens",
+                question: "What is the native token of the OpenGradient network?",
+                options: [
+                    "$ETH",
+                    "$OPG",
+                    "$OG",
+                    "$GRAD"
+                ],
+                correct: 1,
+                explanation: "$OPG is the native token used to pay for AI inference and transactions on the OpenGradient network."
+            },
+            {
+                category: "Verification",
+                question: "What makes OpenGradient inference 'verifiable'?",
+                options: [
+                    "Results are checked by humans",
+                    "Each inference produces a blockchain transaction hash as proof",
+                    "The code is open source",
+                    "Multiple servers run the same query"
+                ],
+                correct: 1,
+                explanation: "Every AI inference on OpenGradient produces a cryptographic proof recorded on the blockchain, making it tamper-proof and auditable."
+            },
+            {
+                category: "SDK",
+                question: "Which programming language is the OpenGradient SDK primarily written in?",
+                options: [
+                    "JavaScript",
+                    "Rust",
+                    "Python",
+                    "Go"
+                ],
+                correct: 2,
+                explanation: "The OpenGradient SDK is primarily written in Python, making it easy to integrate with existing ML/AI workflows."
+            },
+            {
+                category: "Architecture",
+                question: "What does HACA stand for in OpenGradient?",
+                options: [
+                    "High Availability Computing Architecture",
+                    "Heterogeneous AI Computing Architecture",
+                    "Hash-based Authentication Computing Algorithm",
+                    "Hybrid Automatic Consensus Algorithm"
+                ],
+                correct: 1,
+                explanation: "HACA (Heterogeneous AI Computing Architecture) is OpenGradient's proprietary infrastructure for scalable on-chain AI computation."
+            },
+            {
+                category: "Use Cases",
+                question: "Which of the following is NOT a typical use case for OpenGradient?",
+                options: [
+                    "Verifiable AI agents",
+                    "Mining cryptocurrency",
+                    "On-chain AI inference",
+                    "Decentralized model hosting"
+                ],
+                correct: 1,
+                explanation: "OpenGradient is focused on AI infrastructure, not cryptocurrency mining. It enables verifiable AI inference, model hosting, and AI agents."
+            },
+            {
+                category: "Setup",
+                question: "What is required to run AI inference on OpenGradient?",
+                options: [
+                    "A GPU",
+                    "A funded wallet with $OPG tokens",
+                    "A dedicated server",
+                    "Special hardware"
+                ],
+                correct: 1,
+                explanation: "You need a wallet funded with $OPG tokens to pay for the small transaction fees when running AI inference on the network."
+            },
+            {
+                category: "Model Hub",
+                question: "What is a model CID in OpenGradient?",
+                options: [
+                    "A model's creation ID",
+                    "A content identifier for decentralized storage",
+                    "A customer identification number",
+                    "A cloud instance ID"
+                ],
+                correct: 1,
+                explanation: "CID (Content Identifier) is the model's permanent address on decentralized storage, used to reference and run inference on models."
+            },
+            {
+                category: "Comparison",
+                question: "OpenGradient is often described as a Web3 version of which platform(s)?",
+                options: [
+                    "GitHub + GitLab",
+                    "AWS + Azure",
+                    "HuggingFace + OpenAI",
+                    "Docker + Kubernetes"
+                ],
+                correct: 2,
+                explanation: "OpenGradient combines model hosting like HuggingFace with AI inference capabilities like OpenAI, but in a decentralized, verifiable manner."
+            },
+            {
+                category: "SDK",
+                question: "Which command initializes OpenGradient configuration?",
+                options: [
+                    "opengradient setup",
+                    "opengradient config init",
+                    "og init",
+                    "opengradient start"
+                ],
+                correct: 1,
+                explanation: "The 'opengradient config init' command launches the configuration wizard to set up your wallet and credentials."
+            },
+            {
+                category: "Security",
+                question: "Why is a private key important in OpenGradient?",
+                options: [
+                    "It speeds up inference",
+                    "It's your blockchain identity for signing transactions",
+                    "It encrypts your AI models",
+                    "It stores your model weights"
+                ],
+                correct: 1,
+                explanation: "Your private key is your blockchain identity. It signs transactions and proves ownership of your wallet. Never share it publicly."
+            },
+            {
+                category: "Features",
+                question: "What can you do with the OpenGradient CLI?",
+                options: [
+                    "Only upload models",
+                    "Only run inference",
+                    "Manage config, upload models, and run inference",
+                    "Only check wallet balance"
+                ],
+                correct: 2,
+                explanation: "The OpenGradient CLI is a comprehensive tool that lets you manage configuration, upload models, run inference, and more."
+            },
+            {
+                category: "Ecosystem",
+                question: "Where can you get free testnet $OPG tokens?",
+                options: [
+                    "hub.opengradient.ai",
+                    "faucet.opengradient.ai",
+                    "tokens.opengradient.ai",
+                    "swap.opengradient.ai"
+                ],
+                correct: 1,
+                explanation: "The faucet at faucet.opengradient.ai provides free testnet tokens for developers to test their AI applications."
+            }
+        ];
+
+        // Quiz State
+        let currentQuestion = 0;
+        let score = 0;
+        let timer = 30;
+        let timerInterval = null;
+        let answers = [];
+        let startTime = null;
+        let shuffledQuestions = [];
+
+        // DOM Elements
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultsScreen = document.getElementById('results-screen');
+
+        // Shuffle array
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // Start Quiz
+        function startQuiz() {
+            shuffledQuestions = shuffleArray(questions);
+            currentQuestion = 0;
+            score = 0;
+            answers = [];
+            startTime = Date.now();
+
+            startScreen.classList.add('hidden');
+            resultsScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            quizScreen.classList.add('fade-in');
+
+            document.getElementById('total-q').textContent = shuffledQuestions.length;
+            document.getElementById('current-score').textContent = 0;
+
+            loadQuestion();
+        }
+
+        // Load Question
+        function loadQuestion() {
+            const q = shuffledQuestions[currentQuestion];
+            
+            document.getElementById('current-q').textContent = currentQuestion + 1;
+            document.getElementById('question-category').textContent = q.category;
+            document.getElementById('question-text').textContent = q.question;
+            
+            // Update progress bar
+            const progress = (currentQuestion / shuffledQuestions.length) * 100;
+            document.getElementById('progress-fill').style.width = progress + '%';
+
+            // Load options
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            
+            const letters = ['A', 'B', 'C', 'D'];
+            q.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                optionDiv.innerHTML = `
+                    <span class="option-letter">${letters[index]}</span>
+                    <span>${option}</span>
+                `;
+                optionDiv.onclick = () => selectAnswer(index);
+                optionsContainer.appendChild(optionDiv);
+            });
+
+            // Hide explanation and next button
+            document.getElementById('explanation').classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+
+            // Start timer
+            timer = 30;
+            document.getElementById('timer').textContent = timer;
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        // Update Timer
+        function updateTimer() {
+            timer--;
+            document.getElementById('timer').textContent = timer;
+            
+            if (timer <= 0) {
+                clearInterval(timerInterval);
+                selectAnswer(-1); // Time's up
+            }
+        }
+
+        // Select Answer
+        function selectAnswer(index) {
+            clearInterval(timerInterval);
+            
+            const q = shuffledQuestions[currentQuestion];
+            const options = document.querySelectorAll('.option');
+            
+            // Disable all options
+            options.forEach(opt => opt.classList.add('disabled'));
+
+            // Store answer
+            answers.push({
+                question: q.question,
+                selected: index,
+                correct: q.correct,
+                isCorrect: index === q.correct
+            });
+
+            // Show correct/incorrect
+            if (index >= 0) {
+                options[index].classList.add(index === q.correct ? 'correct' : 'incorrect');
+            }
+            
+            if (index !== q.correct) {
+                options[q.correct].classList.add('correct');
+            } else {
+                score++;
+                document.getElementById('current-score').textContent = score;
+            }
+
+            // Show explanation
+            document.getElementById('explanation-text').textContent = q.explanation;
+            document.getElementById('explanation').classList.remove('hidden');
+            document.getElementById('explanation').classList.add('fade-in');
+
+            // Show next button
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.classList.remove('hidden');
+            nextBtn.textContent = currentQuestion === shuffledQuestions.length - 1 ? 'See Results →' : 'Next Question →';
+        }
+
+        // Next Question
+        function nextQuestion() {
+            currentQuestion++;
+            
+            if (currentQuestion >= shuffledQuestions.length) {
+                showResults();
+            } else {
+                loadQuestion();
+            }
+        }
+
+        // Show Results
+        function showResults() {
+            quizScreen.classList.add('hidden');
+            resultsScreen.classList.remove('hidden');
+            resultsScreen.classList.add('fade-in');
+
+            const percentage = Math.round((score / shuffledQuestions.length) * 100);
+            const timeTaken = Math.round((Date.now() - startTime) / 1000);
+
+            document.getElementById('final-score').textContent = percentage;
+            document.getElementById('correct-count').textContent = score;
+            document.getElementById('incorrect-count').textContent = shuffledQuestions.length - score;
+            document.getElementById('time-taken').textContent = timeTaken + 's';
+
+            // Set rank and icon
+            let rank, rankClass, icon, title;
+            if (percentage >= 90) {
+                rank = '🏆 OpenGradient Master';
+                rankClass = 'rank-master';
+                icon = '🏆';
+                title = 'Outstanding!';
+            } else if (percentage >= 70) {
+                rank = '⭐ OpenGradient Expert';
+                rankClass = 'rank-expert';
+                icon = '⭐';
+                title = 'Great Job!';
+            } else if (percentage >= 50) {
+                rank = '📚 Intermediate';
+                rankClass = 'rank-intermediate';
+                icon = '📚';
+                title = 'Good Effort!';
+            } else {
+                rank = '🌱 Beginner';
+                rankClass = 'rank-beginner';
+                icon = '🌱';
+                title = 'Keep Learning!';
+            }
+
+            document.getElementById('results-icon').textContent = icon;
+            document.getElementById('results-title').textContent = title;
+            document.getElementById('rank-badge').textContent = rank;
+            document.getElementById('rank-badge').className = 'rank-badge ' + rankClass;
+
+            // Save to leaderboard
+            saveScore(percentage, timeTaken);
+            displayLeaderboard();
+        }
+
+        // Save Score
+        function saveScore(percentage, timeTaken) {
+            const scores = JSON.parse(localStorage.getItem('og-quiz-scores') || '[]');
+            scores.push({
+                score: percentage,
+                time: timeTaken,
+                date: new Date().toLocaleDateString()
+            });
+            scores.sort((a, b) => b.score - a.score || a.time - b.time);
+            localStorage.setItem('og-quiz-scores', JSON.stringify(scores.slice(0, 10)));
+        }
+
+        // Display Leaderboard
+        function displayLeaderboard() {
+            const scores = JSON.parse(localStorage.getItem('og-quiz-scores') || '[]');
+            const leaderboard = document.getElementById('leaderboard');
+            
+            if (scores.length === 0) {
+                leaderboard.innerHTML = '<div class="leaderboard-item">No scores yet. Be the first!</div>';
+                return;
+            }
+
+            leaderboard.innerHTML = scores.map((s, i) => `
+                <div class="leaderboard-item">
+                    <span class="leaderboard-rank">#${i + 1}</span>
+                    <span class="leaderboard-name">${s.date}</span>
+                    <span class="leaderboard-score">${s.score}% (${s.time}s)</span>
+                </div>
+            `).join('');
+        }
+
+        // Restart Quiz
+        function restartQuiz() {
+            resultsScreen.classList.add('hidden');
+            startQuiz();
+        }
+
+        // Show Answers
+        function showAnswers() {
+            let html = '<h3 style="margin-bottom: 20px;">📝 Answer Review</h3>';
+            
+            answers.forEach((a, i) => {
+                const q = shuffledQuestions[i];
+                html += `
+                    <div style="margin-bottom: 20px; padding: 15px; background: var(--bg-hover); border-radius: 12px; border-left: 4px solid ${a.isCorrect ? 'var(--success)' : 'var(--error)'};">
+                        <p style="font-weight: 600; margin-bottom: 10px;">${i + 1}. ${a.question}</p>
+                        <p style="color: ${a.isCorrect ? 'var(--success)' : 'var(--error)'};">
+                            ${a.isCorrect ? '✓ Correct' : '✗ Your answer: ' + (a.selected >= 0 ? q.options[a.selected] : 'Time expired')}
+                        </p>
+                        ${!a.isCorrect ? `<p style="color: var(--success); margin-top: 5px;">Correct answer: ${q.options[a.correct]}</p>` : ''}
+                    </div>
+                `;
+            });
+
+            html += '<button class="btn" style="margin-top: 20px;" onclick="hideAnswers()">Back to Results</button>';
+            
+            resultsScreen.innerHTML = html;
+        }
+
+        // Hide Answers
+        function hideAnswers() {
+            location.reload();
+        }
+
+        // Share to Twitter
+        function shareTwitter() {
+            const percentage = Math.round((score / shuffledQuestions.length) * 100);
+            const text = `🧠 I scored ${percentage}% on the OpenGradient Knowledge Quiz!\n\nTest your knowledge of decentralized AI infrastructure:\n`;
+            const url = window.location.href;
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+        }
+
+        // Copy Result
+        function copyResult() {
+            const percentage = Math.round((score / shuffledQuestions.length) * 100);
+            const text = `🧠 OpenGradient Quiz Result: ${percentage}%\nTest your knowledge: ${window.location.href}`;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Result copied to clipboard!');
+            });
+        }
+
+        // Initialize leaderboard on page load
+        displayLeaderboard();
+    </script>
+</body>
+</html>

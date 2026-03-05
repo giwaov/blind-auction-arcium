@@ -13,67 +13,35 @@ const {
   listCV,
   bufferCV,
 } = require("@stacks/transactions");
-const { STACKS_MAINNET, TransactionVersion } = require("@stacks/network");
-const { generateWallet, getStxAddress } = require("@stacks/wallet-sdk");
 const crypto = require("crypto");
 
+<<<<<<< Updated upstream
 // Config
 const MNEMONIC = "REDACTED_MNEMONIC";
 const CONTRACT_OWNER = "SP3E0DQAHTXJHH5YT9TZCSBW013YXZB25QFDVXXWY";
 const network = STACKS_MAINNET;
+=======
+// Shared utilities
+const {
+  config,
+  getNetwork,
+  getPrimaryAccount,
+  getAccountNonce,
+  broadcastTransaction,
+} = require("./lib/stacks-utils");
+>>>>>>> Stashed changes
 
-async function broadcastTx(transaction, name) {
-  const serializedTxHex = transaction.serialize();
-  const serializedTx = Buffer.from(serializedTxHex, "hex");
-
-  const response = await fetch("https://api.mainnet.hiro.so/v2/transactions", {
-    method: "POST",
-    headers: { "Content-Type": "application/octet-stream" },
-    body: serializedTx,
-  });
-
-  const responseText = await response.text();
-
-  if (!response.ok) {
-    let errorData;
-    try {
-      errorData = JSON.parse(responseText);
-    } catch {
-      errorData = { error: responseText };
-    }
-    console.error(`   ❌ ${name} failed: ${JSON.stringify(errorData)}`);
-    return null;
-  }
-
-  const txid = responseText.replace(/"/g, "");
-  console.log(`   ✅ ${name} TX: ${txid}`);
-  console.log(`      Explorer: https://explorer.stacks.co/txid/${txid}?chain=mainnet`);
-  return txid;
-}
-
-async function getAccountNonce(address) {
-  try {
-    const response = await fetch(
-      `https://api.mainnet.hiro.so/extended/v1/address/${address}/nonces`
-    );
-    const data = await response.json();
-    return BigInt(data.possible_next_nonce);
-  } catch (error) {
-    console.error("Failed to fetch nonce:", error.message);
-    return 0n;
-  }
-}
+// Contract owner address - update this after deployment
+const CONTRACT_OWNER = process.env.STACKS_CONTRACT_OWNER || "SP3E0DQAHTXJHH5YT9TZCSBW013YXZB25QFDVXXWY";
 
 async function main() {
   console.log("═══════════════════════════════════════════════════════════");
   console.log("        INTERACT WITH DEPLOYED CONTRACTS");
   console.log("═══════════════════════════════════════════════════════════\n");
 
-  // Generate wallet
-  const wallet = await generateWallet({ secretKey: MNEMONIC, password: "" });
-  const account = wallet.accounts[0];
-  const privateKey = account.stxPrivateKey;
-  const address = getStxAddress({ account, transactionVersion: TransactionVersion.Mainnet });
+  // Get wallet from shared utils
+  const { privateKey, address } = await getPrimaryAccount();
+  const network = getNetwork();
 
   console.log(`🔑 Address: ${address}\n`);
 
@@ -104,10 +72,10 @@ async function main() {
       anchorMode: AnchorMode.Any,
       postConditionMode: PostConditionMode.Allow,
       nonce: nonce++,
-      fee: 50000n,
+      fee: config.defaultFee,
     });
-    const txid = await broadcastTx(pollTx, "create-poll");
-    if (txid) results.push({ contract: "voting", action: "create-poll", txid });
+    const { txid } = await broadcastTransaction(pollTx, "create-poll");
+    results.push({ contract: "voting", action: "create-poll", txid });
   } catch (e) {
     console.error(`   ❌ Error: ${e.message}`);
   }
@@ -127,10 +95,10 @@ async function main() {
       anchorMode: AnchorMode.Any,
       postConditionMode: PostConditionMode.Allow,
       nonce: nonce++,
-      fee: 50000n,
+      fee: config.defaultFee,
     });
-    const txid = await broadcastTx(mintTx, "mint");
-    if (txid) results.push({ contract: "nft-mint", action: "mint", txid });
+    const { txid } = await broadcastTransaction(mintTx, "mint");
+    results.push({ contract: "nft-mint", action: "mint", txid });
   } catch (e) {
     console.error(`   ❌ Error: ${e.message}`);
   }
@@ -153,10 +121,10 @@ async function main() {
       anchorMode: AnchorMode.Any,
       postConditionMode: PostConditionMode.Allow,
       nonce: nonce++,
-      fee: 50000n,
+      fee: config.defaultFee,
     });
-    const txid = await broadcastTx(tipTx, "tip");
-    if (txid) results.push({ contract: "tip-jar", action: "tip", txid });
+    const { txid } = await broadcastTransaction(tipTx, "tip");
+    results.push({ contract: "tip-jar", action: "tip", txid });
   } catch (e) {
     console.error(`   ❌ Error: ${e.message}`);
   }
@@ -182,10 +150,10 @@ async function main() {
       anchorMode: AnchorMode.Any,
       postConditionMode: PostConditionMode.Allow,
       nonce: nonce++,
-      fee: 50000n,
+      fee: config.defaultFee,
     });
-    const txid = await broadcastTx(auctionTx, "create-auction");
-    if (txid) results.push({ contract: "blind-auction", action: "create-auction", txid });
+    const { txid } = await broadcastTransaction(auctionTx, "create-auction");
+    results.push({ contract: "blind-auction", action: "create-auction", txid });
   } catch (e) {
     console.error(`   ❌ Error: ${e.message}`);
   }

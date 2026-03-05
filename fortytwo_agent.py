@@ -17,17 +17,33 @@ import sys
 import traceback
 import os
 from datetime import datetime, timezone
+from pathlib import Path
+
+# Load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+    load_dotenv(Path(__file__).parent / '.env')
+except ImportError:
+    pass  # dotenv not installed, rely on system env vars
 
 # ─── Config ───────────────────────────────────────────────────────────────────
 
 BASE_URL = "https://app.fortytwo.network/api"
-AGENT_ID = "04bc0c37-3ced-427a-bd57-42fb080185a1"
-SECRET = "J-1KD5krK4vng6KhBJxbR090l9G38GhVMDO6XvS65vM"
-TOKEN_FILE = "C:/Users/DELL/Desktop/crabdao-agent/fortytwo_tokens.json"
+AGENT_ID = os.environ.get("FORTYTWO_AGENT_ID", "")
+SECRET = os.environ.get("FORTYTWO_SECRET", "")
+TOKEN_FILE = os.environ.get("FORTYTWO_TOKEN_FILE", str(Path(__file__).parent / "fortytwo_tokens.json"))
 OPENCLAW_CONFIG = os.path.expanduser("~/.openclaw/skills/fortytwo/config.json")
 
-OPENROUTER_KEY = "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"
+OPENROUTER_KEY = os.environ.get("OPENROUTER_API_KEY", "")
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+
+# Validate required environment variables
+if not AGENT_ID or not SECRET:
+    print("ERROR: FORTYTWO_AGENT_ID and FORTYTWO_SECRET must be set in .env")
+    print("Copy .env.example to .env and configure your credentials.")
+    sys.exit(1)
+if not OPENROUTER_KEY:
+    print("WARNING: OPENROUTER_API_KEY not set - LLM calls will fail")
 
 # Free models via OpenRouter (no credits needed)
 JUDGE_MODEL = "arcee-ai/trinity-large-preview:free"
@@ -79,13 +95,13 @@ def http(method, url, data=None, headers=None, timeout=30):
             except urllib.error.HTTPError as e2:
                 try:
                     return json.loads(e2.read().decode("utf-8")), e2.code
-                except:
+                except (json.JSONDecodeError, UnicodeDecodeError):
                     return {"detail": str(e2)}, e2.code
         try:
             return json.loads(e.read().decode("utf-8")), code
-        except:
+        except (json.JSONDecodeError, UnicodeDecodeError):
             return {"detail": str(e)}, code
-    except Exception as e:
+    except (urllib.error.URLError, TimeoutError, OSError) as e:
         return {"detail": str(e)}, 0
 
 def api(method, path, data=None):
@@ -144,7 +160,8 @@ def load_tokens():
             data = json.load(f)
         access_token = data["tokens"]["access_token"]
         refresh_token_val = data["tokens"]["refresh_token"]
-    except:
+    except (FileNotFoundError, KeyError, json.JSONDecodeError) as e:
+        log("AUTH", f"Token file error ({type(e).__name__}), logging in fresh")
         do_login()
 
 # ─── OpenRouter LLM ──────────────────────────────────────────────────────────
@@ -221,8 +238,8 @@ def generate_and_evaluate_answer(question, specialization):
             try:
                 score = line.split(":")[1].strip().split("/")[0].strip()
                 confidence = int(score)
-            except:
-                pass
+            except (IndexError, ValueError):
+                pass  # Could not parse confidence score
         else:
             answer_lines.append(line)
 
@@ -410,8 +427,8 @@ def rank_answers(question, answers, specialization):
             text = text.split("\n", 1)[1].rsplit("```", 1)[0]
         data = json.loads(text)
         results = data.get("results", [])
-    except:
-        log("JUDGE", f"Failed to parse pairwise results: {result[:300]}")
+    except (json.JSONDecodeError, IndexError, KeyError) as e:
+        log("JUDGE", f"Failed to parse pairwise results ({type(e).__name__}): {result[:300]}")
         return None, None
 
     # Count wins

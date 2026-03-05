@@ -1,49 +1,85 @@
 # Dependencies
 node_modules/
 dist/
+.next/
+target/
 
 # Environment / secrets
 .env
-.env.*
+.env.local
+.env.*.local
+!.env.example
 *.pem
 *.key
 
 # CRITICAL: Wallet seed phrase files - NEVER commit
 recover_wallet*.exp
+*.exp
 
 # Solana keypairs
 **/id.json
 *keypair*.json
 
-# Python files with hardcoded API keys
-openmind_agent.py
-openmind_chat.py
-openmind_simple_chat.py
-
 # Additional sensitive patterns
-*.exp
 *secret*
 *credential*
 
+# Binary files / ML models (use Git LFS for these)
+*.onnx
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.h5
+*.pkl
+*.pickle
+*.model
+
 # Logs
 *.log
+logs/
 
 # Temp files
 tmpclaude-*
 nul
+tmp/
+.tmp/
 
 # OS
 .DS_Store
 Thumbs.db
+*.swp
+*.swo
 
 # Build artifacts
-blind-auction/target/
-blind-auction-frontend/.next/
-blind-auction-frontend/node_modules/
+**/target/
+**/.next/
+**/out/
+**/build/
+*.tsbuildinfo
 
 # IDE
 .vscode/
 .idea/
+*.sublime-*
 
-# Archive - non-Arcium projects preserved in archive/ folder
-# (No longer needed - projects moved to archive/)
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+*.egg-info/
+.eggs/
+venv/
+.venv/
+
+# Rust
+**/Cargo.lock
+# Keep Cargo.lock for applications, remove for libraries if needed
+
+# Test coverage
+coverage/
+.coverage
+htmlcov/
+
+.vercel

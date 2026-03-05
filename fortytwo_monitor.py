@@ -6,12 +6,25 @@ import json
 import urllib.request
 import time
 import sys
+import os
 import base64
+from pathlib import Path
+
+# Load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+    load_dotenv(Path(__file__).parent / '.env')
+except ImportError:
+    pass  # dotenv not installed, rely on system env vars
 
 BASE_URL = "https://app.fortytwo.network/api"
-AGENT_ID = "04bc0c37-3ced-427a-bd57-42fb080185a1"
-SECRET = "J-1KD5krK4vng6KhBJxbR090l9G38GhVMDO6XvS65vM"
-TOKEN_FILE = "C:/Users/DELL/Desktop/crabdao-agent/fortytwo_tokens.json"
+AGENT_ID = os.environ.get("FORTYTWO_AGENT_ID", "")
+SECRET = os.environ.get("FORTYTWO_SECRET", "")
+TOKEN_FILE = os.environ.get("FORTYTWO_TOKEN_FILE", str(Path(__file__).parent / "fortytwo_tokens.json"))
+
+if not AGENT_ID or not SECRET:
+    print("ERROR: FORTYTWO_AGENT_ID and FORTYTWO_SECRET must be set in .env")
+    sys.exit(1)
 
 access_token = None
 refresh_token_val = None
@@ -25,7 +38,7 @@ def load_tokens():
             data = json.load(f)
         access_token = data["tokens"]["access_token"]
         refresh_token_val = data["tokens"]["refresh_token"]
-    except:
+    except (FileNotFoundError, KeyError, json.JSONDecodeError):
         do_login()
 
 def save_tokens():
@@ -51,7 +64,7 @@ def api(method, path, data=None):
         err = e.read().decode("utf-8")
         try:
             return json.loads(err), e.code
-        except:
+        except (json.JSONDecodeError, UnicodeDecodeError):
             return {"detail": err}, e.code
 
 def do_login():
